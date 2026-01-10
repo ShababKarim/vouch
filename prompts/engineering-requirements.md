@@ -137,7 +137,7 @@ Vouch is a web application for event invitations with pari-mutuel betting. The s
 DATABASE_URL="postgresql://user:password@localhost:5432/vouch"
 
 # Environment profile: local | local-prod | production
-APP_ENV="local"
+NODE_ENV="local"
 
 # SMS (Twilio) - only needed for local-prod and production
 TWILIO_ACCOUNT_SID=""
@@ -171,7 +171,7 @@ services:
       - "3000:3000"
     environment:
       - DATABASE_URL=postgresql://vouch:vouch@db:5432/vouch
-      - APP_ENV=local
+      - NODE_ENV=local
     depends_on:
       - db
     volumes:

@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===================
+// User
+// ===================
+model User {
+  id          String   @id @default(cuid())
+  phone       String   @unique
+  displayName String   @map("display_name")
+  photoUrl    String?  @map("photo_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  memberships     EventMembership[]
+  bets            Bet[]
+  outcomes        Outcome[]    @relation("OutcomeCreator")
+  settlementsFrom Settlement[] @relation("SettlementFrom")
+  settlementsTo   Settlement[] @relation("SettlementTo")
+
+  @@map("users")
+}
+
+// ===================
+// Event
+// ===================
+model Event {
+  id          String      @id @default(cuid())
+  title       String
+  datetime    DateTime
+  location    String
+  description String?
+  coverImage  String?     @map("cover_image")
+  isPublic    Boolean     @default(false) @map("is_public")
+  status      EventStatus @default(UPCOMING)
+  inviteCode  String      @unique @default(cuid()) @map("invite_code")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  memberships EventMembership[]
+  outcomes    Outcome[]
+  settlements Settlement[]
+
+  @@map("events")
+}
+
+enum EventStatus {
+  UPCOMING   // Before event datetime
+  ACTIVE     // Event datetime has passed, betting locked
+  COMPLETED  // Host marked as completed
+  RESOLVED   // All outcomes resolved
+}
+
+// ===================
+// Event Membership
+// ===================
+model EventMembership {
+  id         String     @id @default(cuid())
+  userId     String     @map("user_id")
+  eventId    String     @map("event_id")
+  role       MemberRole @default(ATTENDEE)
+  rsvpStatus RsvpStatus @default(PENDING) @map("rsvp_status")
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@map("event_memberships")
+}
+
+enum MemberRole {
+  HOST
+  COHOST
+  ATTENDEE
+}
+
+enum RsvpStatus {
+  PENDING
+  YES
+  NO
+  MAYBE
+}
+
+// ===================
+// Outcome (Betting Question)
+// ===================
+model Outcome {
+  id              String        @id @default(cuid())
+  eventId         String        @map("event_id")
+  creatorId       String        @map("creator_id")
+  question        String
+  status          OutcomeStatus @default(OPEN)
+  winningOptionId String?       @map("winning_option_id")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  creator User     @relation("OutcomeCreator", fields: [creatorId], references: [id])
+  options Option[]
+
+  @@map("outcomes")
+}
+
+enum OutcomeStatus {
+  OPEN     // Accepting bets
+  LOCKED   // Event started, no more bets
+  RESOLVED // Winner selected, payouts calculated
+  REFUNDED // Outcome deleted or no winner, bets returned
+}
+
+// ===================
+// Option (Betting Choice)
+// ===================
+model Option {
+  id        String   @id @default(cuid())
+  outcomeId String   @map("outcome_id")
+  label     String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  outcome Outcome @relation(fields: [outcomeId], references: [id], onDelete: Cascade)
+  bets    Bet[]
+
+  @@map("options")
+}
+
+// ===================
+// Bet
+// ===================
+model Bet {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  optionId  String   @map("option_id")
+  amount    Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  option Option @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, optionId])
+  @@map("bets")
+}
+
+// ===================
+// Settlement
+// ===================
+model Settlement {
+  id         String    @id @default(cuid())
+  eventId    String    @map("event_id")
+  fromUserId String    @map("from_user_id")
+  toUserId   String    @map("to_user_id")
+  amount     Decimal   @db.Decimal(10, 2)
+  isSettled  Boolean   @default(false) @map("is_settled")
+  settledAt  DateTime? @map("settled_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  event    Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  fromUser User  @relation("SettlementFrom", fields: [fromUserId], references: [id])
+  toUser   User  @relation("SettlementTo", fields: [toUserId], references: [id])
+
+  @@unique([eventId, fromUserId, toUserId])
+  @@map("settlements")
+}

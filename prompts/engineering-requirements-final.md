@@ -155,8 +155,7 @@ DATABASE_URL="postgresql://vouch:vouch@localhost:5432/vouch"
 # Environment
 # ===================
 # local | local-prod | production
-APP_ENV="local"
-NODE_ENV="development"
+NODE_ENV="local"
 
 # ===================
 # App URLs
@@ -201,8 +200,7 @@ services:
       - "3000:3000"
     environment:
       - DATABASE_URL=postgresql://vouch:vouch@db:5432/vouch
-      - APP_ENV=local
-      - NODE_ENV=development
+      - NODE_ENV=local
       - NEXT_PUBLIC_APP_URL=http://localhost:3000
       - JWT_SECRET=local-dev-secret-key-min-32-characters
       - JWT_EXPIRY_HOURS=168
@@ -244,7 +242,7 @@ version: '3.8'
 services:
   app:
     environment:
-      - APP_ENV=local-prod
+      - NODE_ENV=local-prod
       - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
       - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
       - TWILIO_VERIFY_SERVICE_SID=${TWILIO_VERIFY_SERVICE_SID}
