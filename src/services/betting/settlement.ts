@@ -1,4 +1,5 @@
 import { PayoutResult } from './pari-mutuel'
+import { floorToTwoDecimals } from './utils'
 
 export interface Settlement {
   fromUserId: string
@@ -41,8 +42,8 @@ export function generateSettlements(payouts: PayoutResult[]): Settlement[] {
       amount: settlementAmount
     })
 
-    debtor.amount -= settlementAmount
-    creditor.amount -= settlementAmount
+    debtor.amount = floorToTwoDecimals(debtor.amount - settlementAmount)
+    creditor.amount = floorToTwoDecimals(creditor.amount - settlementAmount)
 
     if (debtor.amount === 0) {
       debtorIndex++
