@@ -925,7 +925,7 @@ model Settlement {
 - Net amounts are calculated (Splitwise-style)
 
 **Tasks:**
-- [ ] Create `src/services/settlement/generator.ts`
+- [ ] Create `src/services/betting/settlement.ts`
   - `generateSettlements(eventId, payoutResults)`
   - Consolidate: if A owes B $10 and B owes A $3, net is A owes B $7
 - [ ] Integrate with outcome resolution
@@ -1421,7 +1421,7 @@ vouch/
 │   │   │   ├── pari-mutuel.ts
 │   │   │   └── pari-mutuel.test.ts
 │   │   └── settlement/
-│   │       └── generator.ts
+│   │       └── settlement.ts
 │   └── types/
 │       └── index.ts
 └── prompts/
