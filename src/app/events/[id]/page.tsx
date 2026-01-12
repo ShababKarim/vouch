@@ -5,44 +5,23 @@ import { useParams, useRouter } from 'next/navigation'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { Header } from '@/components/layout/Header'
 import { BottomNav } from '@/components/layout/BottomNav'
-import { ArrowLeft, Share2, Users, Calendar, MapPin, DollarSign } from 'lucide-react'
-
-interface Event {
-  id: string
-  title: string
-  datetime: string
-  location: string
-  description?: string
-  coverImage?: string
-  isPublic: boolean
-  status: string
-  inviteCode: string
-  memberships: Array<{
-    id: string
-    role: string
-    rsvpStatus: string
-    user: {
-      id: string
-      displayName: string
-      photoUrl?: string
-    }
-  }>
-  _count: {
-    memberships: number
-    outcomes: number
-  }
-}
-
-type TabType = 'details' | 'attendees' | 'bets' | 'settlements'
+import { useAuth } from '@/components/layout/AuthProvider'
+import { Event, Settlement, TabType } from '@/lib/types'
+import { ArrowLeft, Share2, Users, Calendar, MapPin, DollarSign, CheckCircle, XCircle, Clock, Settings, UserCheck } from 'lucide-react'
+import AttendeesTab from "@/components/events/AttendeesTab";
+import SettlementsTab from "@/components/events/SettlementsTab";
 
 export default function EventDetailPage() {
   const [event, setEvent] = useState<Event | null>(null)
+  const [settlements, setSettlements] = useState<Settlement[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState<TabType>('details')
+  const [isUpdatingRsvp, setIsUpdatingRsvp] = useState(false)
   const params = useParams()
   const router = useRouter()
   const eventId = params.id as string
+  const { user } = useAuth()
 
   useEffect(() => {
     if (eventId) {
@@ -68,6 +47,76 @@ export default function EventDetailPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const fetchSettlements = async () => {
+    try {
+      const response = await fetch(`/api/events/${eventId}/settlements`)
+      if (response.ok) {
+        const data = await response.json()
+        setSettlements(data)
+      }
+    } catch (err) {
+      console.error('Failed to fetch settlements:', err)
+    }
+  }
+
+  useEffect(() => {
+    if (eventId && activeTab === 'settlements') {
+      fetchSettlements()
+    }
+  }, [eventId, activeTab])
+
+  const handleRsvpUpdate = async (status: 'YES' | 'NO' | 'MAYBE') => {
+    if (!user || !event) return
+
+    setIsUpdatingRsvp(true)
+    try {
+      const response = await fetch(`/api/events/${eventId}/rsvp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rsvpStatus: status })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update RSVP')
+      }
+
+      // Refresh event data
+      await fetchEvent()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update RSVP')
+    } finally {
+      setIsUpdatingRsvp(false)
+    }
+  }
+
+  const handleSettleSettlement = async (settlementId: string) => {
+    try {
+      const response = await fetch(`/api/settlements/${settlementId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' }
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to settle')
+      }
+
+      // Refresh settlements
+      await fetchSettlements()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to settle')
+    }
+  }
+
+  const getUserMembership = () => {
+    if (!event || !user) return null
+    return event.memberships.find(m => m.user.id === user.id)
+  }
+
+  const isHost = () => {
+    const membership = getUserMembership()
+    return membership?.role === 'HOST'
   }
 
   const handleShare = async () => {
@@ -130,6 +179,7 @@ export default function EventDetailPage() {
     { id: 'details', label: 'Details', icon: Calendar },
     { id: 'attendees', label: 'Attendees', icon: Users },
     { id: 'bets', label: 'Bets', icon: DollarSign },
+    { id: 'settlements', label: 'Settlements', icon: CheckCircle },
   ] as const
 
   if (isLoading) {
@@ -211,6 +261,66 @@ export default function EventDetailPage() {
               </div>
 
               <div className="flex items-center space-x-2 ml-4">
+                {getUserMembership() && (
+                  <div className="flex items-center space-x-2">
+                    {!isHost() && (
+                      <div className="flex items-center space-x-1 p-1">
+                        <button
+                          onClick={() => handleRsvpUpdate('YES')}
+                          disabled={isUpdatingRsvp}
+                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                            getUserMembership()?.rsvpStatus === 'YES'
+                              ? 'text-green-600'
+                              : 'text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          <CheckCircle className="h-3 w-3 inline mr-1" />
+                          Going
+                        </button>
+                        <button
+                          onClick={() => handleRsvpUpdate('MAYBE')}
+                          disabled={isUpdatingRsvp}
+                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                            getUserMembership()?.rsvpStatus === 'MAYBE'
+                              ? 'text-yellow-800'
+                              : 'text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          <Clock className="h-3 w-3 inline mr-1" />
+                          Maybe
+                        </button>
+                        <button
+                          onClick={() => handleRsvpUpdate('NO')}
+                          disabled={isUpdatingRsvp}
+                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                            getUserMembership()?.rsvpStatus === 'NO'
+                              ? 'text-red-600'
+                              : 'text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          <XCircle className="h-3 w-3 inline mr-1" />
+                          Not Going
+                        </button>
+                      </div>
+                    )}
+                    
+                    {isHost() && (
+                      <div className="flex items-center space-x-1">
+                        <button
+                          className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
+                          title="Event settings"
+                        >
+                          <Settings className="h-4 w-4" />
+                        </button>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          <UserCheck className="h-3 w-3 mr-1" />
+                          Host
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
                 <button
                   onClick={handleShare}
                   className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
@@ -303,45 +413,9 @@ export default function EventDetailPage() {
                 </div>
               )}
 
-              {activeTab === 'attendees' && (
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900 mb-4">Attendees ({event._count.memberships})</h2>
-                  {event.memberships.length === 0 ? (
-                    <p className="text-gray-500">No attendees yet</p>
-                  ) : (
-                    <div className="space-y-3">
-                      {event.memberships.map((membership) => (
-                        <div key={membership.id} className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            {membership.user.photoUrl ? (
-                              <img
-                                src={membership.user.photoUrl}
-                                alt={membership.user.displayName}
-                                className="h-8 w-8 rounded-full object-cover mr-3"
-                              />
-                            ) : (
-                              <div className="h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-                                <Users className="h-4 w-4 text-gray-400" />
-                              </div>
-                            )}
-                            <div>
-                              <p className="text-sm font-medium text-gray-900">{membership.user.displayName}</p>
-                              <p className="text-xs text-gray-500">{membership.role}</p>
-                            </div>
-                          </div>
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            membership.rsvpStatus === 'YES' ? 'bg-green-100 text-green-800' :
-                            membership.rsvpStatus === 'NO' ? 'bg-red-100 text-red-800' :
-                            'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {membership.rsvpStatus}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+              {activeTab === 'attendees' &&
+                  <AttendeesTab event={event} />
+              }
 
               {activeTab === 'bets' && (
                 <div>
@@ -349,6 +423,8 @@ export default function EventDetailPage() {
                   <p className="text-gray-500">Betting functionality coming soon...</p>
                 </div>
               )}
+
+              {activeTab === 'settlements' && <SettlementsTab settlements={settlements} handleSettleSettlement={handleSettleSettlement} />}
             </div>
           </div>
         </main>
