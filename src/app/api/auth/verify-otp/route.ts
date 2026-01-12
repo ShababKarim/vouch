@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSmsService } from '@/services/sms'
-import { signJwt } from '@/lib/auth'
+import {
+    AUTH_COOKIE_HTTP_ONLY,
+    AUTH_COOKIE_MAX_AGE,
+    AUTH_COOKIE_NAME,
+    AUTH_COOKIE_SAME_SITE,
+    AUTH_COOKIE_SECURE,
+    signJwt
+} from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
@@ -40,7 +47,7 @@ export async function POST(request: NextRequest) {
     // Create JWT
     const token = signJwt({
       userId: user.id,
-      phone: user.phone,
+        ...user,
     })
 
     // Set HTTP-only cookie
@@ -54,11 +61,11 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    response.cookies.set('auth-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+    response.cookies.set(AUTH_COOKIE_NAME, token, {
+        httpOnly: AUTH_COOKIE_HTTP_ONLY,
+        secure: AUTH_COOKIE_SECURE,
+        sameSite: AUTH_COOKIE_SAME_SITE,
+        maxAge: AUTH_COOKIE_MAX_AGE,
     })
 
     return response

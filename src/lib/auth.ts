@@ -5,8 +5,18 @@ import { NextRequest } from 'next/server'
 
 export interface JWTPayload {
   userId: string
-  phone: string
+  phone: string,
+    displayName: string
+    photoUrl: string | null
+    createdAt: Date
+    updatedAt: Date
 }
+
+export const AUTH_COOKIE_HTTP_ONLY = true
+export const AUTH_COOKIE_NAME = 'auth-token'
+export const AUTH_COOKIE_SAME_SITE = 'lax'
+export const AUTH_COOKIE_SECURE = process.env.NODE_ENV === 'production'
+export const AUTH_COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
 
 export function signJwt(payload: JWTPayload): string {
   return jwt.sign(payload, env.JWT_SECRET, {

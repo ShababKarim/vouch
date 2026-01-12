@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAuth } from '@/lib/auth'
+import {
+    AUTH_COOKIE_HTTP_ONLY,
+    AUTH_COOKIE_MAX_AGE,
+    AUTH_COOKIE_NAME,
+    AUTH_COOKIE_SAME_SITE,
+    AUTH_COOKIE_SECURE,
+    requireAuth, signJwt
+} from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
@@ -22,16 +29,31 @@ export async function POST(request: NextRequest) {
         photoUrl: photoUrl || null,
       },
     })
+      const response = NextResponse.json({
+          success: true,
+          user: {
+              id: user.id,
+              phone: user.phone,
+              displayName: user.displayName,
+              photoUrl: user.photoUrl,
+          },
+      })
 
-    return NextResponse.json({
-      success: true,
-      user: {
-        id: user.id,
-        phone: user.phone,
-        displayName: user.displayName,
-        photoUrl: user.photoUrl,
-      },
-    })
+      // Create JWT
+      const token = signJwt({
+          userId: user.id,
+          ...user,
+      })
+      console.log(`USER: ${JSON.stringify(user)}`);
+
+      response.cookies.set(AUTH_COOKIE_NAME, token, {
+          httpOnly: AUTH_COOKIE_HTTP_ONLY,
+          secure: AUTH_COOKIE_SECURE,
+          sameSite: AUTH_COOKIE_SAME_SITE,
+          maxAge: AUTH_COOKIE_MAX_AGE,
+      })
+
+      return response
   } catch (error) {
     console.error('Error completing profile:', error)
     
