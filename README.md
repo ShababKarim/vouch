@@ -7,21 +7,25 @@ Event invitations with betting.
 ### Local Development
 
 1. Copy environment variables:
+
 ```bash
 cp .env.example .env.local
 ```
 
 2. Start with Docker Compose:
+
 ```bash
 docker-compose up
 ```
 
 3. Run database migrations:
+
 ```bash
 npx prisma migrate dev
 ```
 
 4. Seed database (optional):
+
 ```bash
 npx prisma db seed
 ```
@@ -30,6 +34,7 @@ npx prisma db seed
 
 1. Add real Twilio and AWS credentials to `.env.local`
 2. Start with override:
+
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.local-prod.yml up
 ```

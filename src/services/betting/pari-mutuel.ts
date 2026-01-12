@@ -1,4 +1,4 @@
-import { floorToTwoDecimals } from './utils'
+import { floorToTwoDecimals } from './utils';
 
 export interface BetWithUser {
     userId: string;
@@ -26,15 +26,15 @@ export function calculatePayouts(
     const rake = totalPool * rakePercent;
     const netPool = totalPool - rake;
 
-    const winningBets = bets.filter(bet => bet.optionId === winningOptionId);
+    const winningBets = bets.filter((bet) => bet.optionId === winningOptionId);
     const totalWinningBets = winningBets.reduce((sum, bet) => sum + bet.amount, 0);
 
     if (totalWinningBets === 0) {
-        return bets.map(bet => ({
+        return bets.map((bet) => ({
             userId: bet.userId,
             betAmount: bet.amount,
             payout: bet.amount,
-            netGain: 0
+            netGain: 0,
         }));
     }
 
@@ -49,16 +49,16 @@ export function calculatePayouts(
             userId: bet.userId,
             betAmount: bet.amount,
             payout,
-            netGain
+            netGain,
         });
     }
 
-    for (const bet of bets.filter(bet => bet.optionId !== winningOptionId)) {
+    for (const bet of bets.filter((bet) => bet.optionId !== winningOptionId)) {
         payoutResults.push({
             userId: bet.userId,
             betAmount: bet.amount,
             payout: 0,
-            netGain: -bet.amount
+            netGain: -bet.amount,
         });
     }
 

@@ -16,14 +16,15 @@ Vouch is an event invitation and RSVP application with integrated pari-mutuel (p
 
 ### 1. User Registration & Authentication
 
-| Requirement | Details |
-|-------------|---------|
-| **Primary identifier** | Phone number |
-| **Verification** | SMS OTP required |
-| **Profile fields** | Display name, profile photo |
-| **Email** | Not required |
+| Requirement            | Details                     |
+| ---------------------- | --------------------------- |
+| **Primary identifier** | Phone number                |
+| **Verification**       | SMS OTP required            |
+| **Profile fields**     | Display name, profile photo |
+| **Email**              | Not required                |
 
 **User Flow:**
+
 1. User enters phone number
 2. System sends SMS OTP
 3. User verifies OTP
@@ -38,16 +39,17 @@ Vouch is an event invitation and RSVP application with integrated pari-mutuel (p
 
 Hosts can create events with the following fields:
 
-| Field | Required | Notes |
-|-------|----------|-------|
-| Event title | Yes | |
-| Date and time | Yes | |
-| Location | Yes | Physical address or virtual link |
-| Description | No | |
-| Cover image | No | |
-| Privacy setting | Yes | Private (invite-only) or Public (shareable link) |
+| Field           | Required | Notes                                            |
+| --------------- | -------- | ------------------------------------------------ |
+| Event title     | Yes      |                                                  |
+| Date and time   | Yes      |                                                  |
+| Location        | Yes      | Physical address or virtual link                 |
+| Description     | No       |                                                  |
+| Cover image     | No       |                                                  |
+| Privacy setting | Yes      | Private (invite-only) or Public (shareable link) |
 
 **Constraints:**
+
 - No recurring events
 - No capacity limits (assume max ~15 attendees per event)
 
@@ -78,49 +80,54 @@ Hosts can create events with the following fields:
 
 #### 3.1 Outcome Creation
 
-| Attribute | Details |
-|-----------|---------|
-| **Who can create** | Host, co-host, or any attendee |
-| **Deadline** | All outcomes must be created before event start time |
-| **Limit** | No limit on number of outcomes per event |
+| Attribute          | Details                                              |
+| ------------------ | ---------------------------------------------------- |
+| **Who can create** | Host, co-host, or any attendee                       |
+| **Deadline**       | All outcomes must be created before event start time |
+| **Limit**          | No limit on number of outcomes per event             |
 
 **Outcome Structure:**
+
 - Question/prediction statement (e.g., "Brian will show up late")
 - Multiple options (e.g., Yes/No, or custom options like "Before 7pm / 7-8pm / After 8pm")
 
 **Editing Rules:**
+
 - Outcomes can be edited **only before** any user places a bet
 - Once a bet is placed, the outcome can only be **deleted** (not edited)
 
 #### 3.2 Placing Bets
 
-| Attribute | Details |
-|-----------|---------|
-| **Currency** | USD (displayed, settled externally) |
-| **Min/Max bet** | None |
-| **Deadline** | Event start time |
+| Attribute         | Details                                              |
+| ----------------- | ---------------------------------------------------- |
+| **Currency**      | USD (displayed, settled externally)                  |
+| **Min/Max bet**   | None                                                 |
+| **Deadline**      | Event start time                                     |
 | **Modifications** | Users can change their bet/amount until event starts |
 
 #### 3.3 Pari-Mutuel Calculation
 
 **Formula:**
+
 1. All bets on an outcome are pooled
 2. 1% rake is deducted from the pool (application fee)
 3. Remaining pool is distributed proportionally to winners based on their stake
 
 **Edge Cases:**
+
 - **Ties/ambiguous outcomes:** Host selects the winning option
 - **No bets on winning option:** All bets are refunded to users
 
 #### 3.4 Outcome Resolution
 
-| Attribute | Details |
-|-----------|---------|
-| **Who resolves** | Host or co-host only |
-| **Deadline** | No time limit after event |
-| **Disputes** | Out of scope (host decision is final) |
+| Attribute        | Details                               |
+| ---------------- | ------------------------------------- |
+| **Who resolves** | Host or co-host only                  |
+| **Deadline**     | No time limit after event             |
+| **Disputes**     | Out of scope (host decision is final) |
 
 **Results Display:**
+
 - Winning option
 - Payout amounts per user
 
@@ -134,11 +141,11 @@ Hosts can create events with the following fields:
 
 ## User Roles & Permissions
 
-| Role | Permissions |
-|------|-------------|
-| **Host / Co-Host** | Create/edit/delete event, add attendees, send text blasts, create outcomes, resolve outcomes, mark settlements |
-| **Attendee** | RSVP, create outcomes, place bets, view results, mark settlements |
-| **Non-user (invited)** | Receive SMS invite, prompted to sign up to RSVP/bet |
+| Role                   | Permissions                                                                                                    |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Host / Co-Host**     | Create/edit/delete event, add attendees, send text blasts, create outcomes, resolve outcomes, mark settlements |
+| **Attendee**           | RSVP, create outcomes, place bets, view results, mark settlements                                              |
+| **Non-user (invited)** | Receive SMS invite, prompted to sign up to RSVP/bet                                                            |
 
 ---
 
@@ -171,36 +178,36 @@ Hosts can create events with the following fields:
 
 ## Non-Functional Requirements
 
-| Requirement | Details |
-|-------------|---------|
-| **Platform** | Web only (mobile browser optimized) |
+| Requirement         | Details                                   |
+| ------------------- | ----------------------------------------- |
+| **Platform**        | Web only (mobile browser optimized)       |
 | **Design approach** | Web-first, responsive for mobile browsers |
-| **SMS reliability** | Critical for invites and blasts |
-| **Onboarding** | Low friction (phone + OTP + display name) |
+| **SMS reliability** | Critical for invites and blasts           |
+| **Onboarding**      | Low friction (phone + OTP + display name) |
 
 ### Scale Assumptions
 
-| Metric | Max Value |
-|--------|-----------|
-| Total users | 50 |
-| Total events | 50 |
-| Concurrent bets | 20 |
+| Metric          | Max Value |
+| --------------- | --------- |
+| Total users     | 50        |
+| Total events    | 50        |
+| Concurrent bets | 20        |
 
 ---
 
 ## Out of Scope (v1)
 
-| Feature | Notes |
-|---------|-------|
-| In-app payment processing | Settlement is external |
-| Real money betting infrastructure | No payment rails needed |
-| Social features | No comments, reactions, activity feed |
-| Calendar integrations | Not supported |
-| Push notifications | SMS only for v1 (push planned for future) |
-| Recurring events | Not supported |
-| Dispute resolution | Host decision is final |
-| Attendee opt-out from blasts | Not supported |
-| Native mobile apps | Web only |
+| Feature                           | Notes                                     |
+| --------------------------------- | ----------------------------------------- |
+| In-app payment processing         | Settlement is external                    |
+| Real money betting infrastructure | No payment rails needed                   |
+| Social features                   | No comments, reactions, activity feed     |
+| Calendar integrations             | Not supported                             |
+| Push notifications                | SMS only for v1 (push planned for future) |
+| Recurring events                  | Not supported                             |
+| Dispute resolution                | Host decision is final                    |
+| Attendee opt-out from blasts      | Not supported                             |
+| Native mobile apps                | Web only                                  |
 
 ---
 
@@ -219,6 +226,7 @@ Hosts can create events with the following fields:
 ## Data Model Hints
 
 ### Core Entities
+
 - **User** — phone, display_name, profile_photo_url
 - **Event** — title, datetime, location, description, cover_image, is_public, status
 - **EventMembership** — user_id, event_id, role (host/co-host/attendee), rsvp_status
