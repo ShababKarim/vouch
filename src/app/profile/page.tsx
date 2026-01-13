@@ -12,7 +12,6 @@ export default function ProfilePage() {
   const { user, logout } = useAuth();
   const [displayName, setDisplayName] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [ledger, setLedger] = useState<any[]>([]);
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
@@ -173,7 +172,7 @@ export default function ProfilePage() {
                     id="displayName"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    className="mt-1 block w-full rounded-md border-gray-300 px-1 py-1 focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                     placeholder="Enter your name"
                     maxLength={50}
                   />
@@ -185,7 +184,7 @@ export default function ProfilePage() {
                     type="tel"
                     value={user.phone}
                     disabled
-                    className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 text-gray-500 shadow-sm sm:text-sm"
+                    className="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 px-1 py-1 text-gray-500 sm:text-sm"
                   />
                   <p className="mt-1 text-xs text-gray-500">Phone number cannot be changed</p>
                 </div>

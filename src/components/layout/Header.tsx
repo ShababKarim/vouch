@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useAuth } from './AuthProvider';
 import { LogOut, User } from 'lucide-react';
+import Logo from '@/components/layout/Logo';
 
 export function Header() {
   const { user, logout } = useAuth();
@@ -12,7 +13,7 @@ export function Header() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link href="/events" className="text-xl font-bold text-gray-900">
-            Vouch
+            <Logo />
           </Link>
 
           {user && (
