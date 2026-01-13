@@ -1,0 +1,33 @@
+# ===================================================================
+# TERRAFORM VARIABLES EXAMPLE
+# ===================================================================
+# Copy this file to terraform.tfvars and customize for your deployment
+
+# Required variables
+aws_region  = "us-east-1"
+environment = "production"
+
+# Optional variables (uncomment and configure as needed)
+
+# Custom domain for the application
+# domain_name = "vouch.yourdomain.com"
+
+# Enable HTTPS with SSL certificate (requires domain_name)
+# enable_https = true
+
+# Custom VPC and subnets (if not using default VPC)
+# vpc_id = "vpc-xxxxxxxxx"
+# public_subnet_ids = ["subnet-xxxxxxxxx", "subnet-xxxxxxxxx", "subnet-xxxxxxxxx"]
+# private_subnet_ids = ["subnet-xxxxxxxxx", "subnet-xxxxxxxxx"]
+
+# Twilio configuration (required for production deployment)
+twilio_config = {
+  account_sid        = "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # Your Twilio Account SID
+  auth_token         = "your_twilio_auth_token"            # Your Twilio Auth Token
+  verify_service_sid = "VAXxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # Your Twilio Verify Service SID
+  phone_number       = "+1234567890"                       # Your Twilio phone number
+}
+
+# JWT secret (optional - will be auto-generated if not provided)
+# Must be at least 32 characters long
+# jwt_secret = "your-super-secret-jwt-key-32-chars"
