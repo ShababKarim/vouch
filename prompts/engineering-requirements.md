@@ -163,35 +163,35 @@ OTP_EXPIRY_MINUTES=5
 version: '3.8'
 
 services:
-    app:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        ports:
-            - '3000:3000'
-        environment:
-            - DATABASE_URL=postgresql://vouch:vouch@db:5432/vouch
-            - NODE_ENV=local
-        depends_on:
-            - db
-        volumes:
-            - ./:/app
-            - /app/node_modules
-            - ./uploads:/app/uploads # Local file storage
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=postgresql://vouch:vouch@db:5432/vouch
+      - NODE_ENV=local
+    depends_on:
+      - db
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - ./uploads:/app/uploads # Local file storage
 
-    db:
-        image: postgres:16-alpine
-        environment:
-            POSTGRES_USER: vouch
-            POSTGRES_PASSWORD: vouch
-            POSTGRES_DB: vouch
-        ports:
-            - '5432:5432'
-        volumes:
-            - postgres_data:/var/lib/postgresql/data
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vouch
+      POSTGRES_PASSWORD: vouch
+      POSTGRES_DB: vouch
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-    postgres_data:
+  postgres_data:
 ```
 
 ---
@@ -549,15 +549,15 @@ model OtpCode {
 - [ ] Configure Tailwind CSS and shadcn/ui
 - [ ] Set up ESLint and Prettier
 - [ ] Create folder structure:
-    ```
-    /src
-      /app          # Next.js app router
-      /components   # React components
-      /lib          # Utilities, services
-      /services     # External service integrations
-      /types        # TypeScript types
-    /prisma         # Prisma schema and migrations
-    ```
+  ```
+  /src
+    /app          # Next.js app router
+    /components   # React components
+    /lib          # Utilities, services
+    /services     # External service integrations
+    /types        # TypeScript types
+  /prisma         # Prisma schema and migrations
+  ```
 - [ ] Create `.env.example` with all variables
 - [ ] Create README with setup instructions
 
@@ -605,15 +605,15 @@ model OtpCode {
 **Tasks:**
 
 - [ ] Implement `POST /api/auth/request-otp`
-    - Generate 6-digit OTP
-    - Store in OtpCode table with 5-min expiry
-    - Send via SMS service (mock or real)
+  - Generate 6-digit OTP
+  - Store in OtpCode table with 5-min expiry
+  - Send via SMS service (mock or real)
 - [ ] Implement `POST /api/auth/verify-otp`
-    - Validate OTP
-    - Create user if new phone
-    - Return JWT token
+  - Validate OTP
+  - Create user if new phone
+  - Return JWT token
 - [ ] Implement `POST /api/auth/complete-profile`
-    - Set display name and photo URL
+  - Set display name and photo URL
 - [ ] Implement `GET /api/auth/me`
 - [ ] Create auth middleware for protected routes
 - [ ] Create JWT utility functions
@@ -630,18 +630,18 @@ model OtpCode {
 **Tasks:**
 
 - [ ] Implement `POST /api/events`
-    - Create event with invite code
-    - Auto-add creator as HOST
+  - Create event with invite code
+  - Auto-add creator as HOST
 - [ ] Implement `GET /api/events`
-    - List events where user is member
+  - List events where user is member
 - [ ] Implement `GET /api/events/:id`
-    - Include members, outcomes summary
+  - Include members, outcomes summary
 - [ ] Implement `PATCH /api/events/:id`
-    - Host/co-host only
+  - Host/co-host only
 - [ ] Implement `DELETE /api/events/:id`
-    - Host only
+  - Host only
 - [ ] Implement `GET /api/events/invite/:code`
-    - Public endpoint for invite links
+  - Public endpoint for invite links
 
 #### Story 2.2: Event Membership
 
@@ -652,18 +652,18 @@ model OtpCode {
 
 - [ ] Implement `GET /api/events/:id/members`
 - [ ] Implement `POST /api/events/:id/members`
-    - Add by phone number
-    - Send SMS invite
-    - Create pending membership
+  - Add by phone number
+  - Send SMS invite
+  - Create pending membership
 - [ ] Implement `PATCH /api/events/:id/members/:userId`
-    - Update role (promote to co-host)
-    - Host/co-host only
+  - Update role (promote to co-host)
+  - Host/co-host only
 - [ ] Implement `DELETE /api/events/:id/members/:userId`
-    - Host/co-host only
+  - Host/co-host only
 - [ ] Implement `POST /api/events/:id/rsvp`
-    - Update own RSVP status
+  - Update own RSVP status
 - [ ] Implement `POST /api/events/:id/join`
-    - For public events via invite code
+  - For public events via invite code
 
 #### Story 2.3: Text Blasts
 
@@ -673,9 +673,9 @@ model OtpCode {
 **Tasks:**
 
 - [ ] Implement `POST /api/events/:id/blast`
-    - Accept message and filter (all/yes/maybe)
-    - Send SMS to filtered members
-    - Host/co-host only
+  - Accept message and filter (all/yes/maybe)
+  - Send SMS to filtered members
+  - Host/co-host only
 
 #### Story 2.4: Event State Management
 
@@ -685,9 +685,9 @@ model OtpCode {
 **Tasks:**
 
 - [ ] Implement event status transitions
-    - UPCOMING → ACTIVE (when datetime passes)
-    - ACTIVE → COMPLETED (manual by host)
-    - COMPLETED → RESOLVED (when all outcomes resolved)
+  - UPCOMING → ACTIVE (when datetime passes)
+  - ACTIVE → COMPLETED (manual by host)
+  - COMPLETED → RESOLVED (when all outcomes resolved)
 - [ ] Create cron job or check-on-access for auto-transitions
 
 ---
@@ -702,17 +702,17 @@ model OtpCode {
 **Tasks:**
 
 - [ ] Implement `GET /api/events/:id/outcomes`
-    - Include options and bet counts
+  - Include options and bet counts
 - [ ] Implement `POST /api/events/:id/outcomes`
-    - Create outcome with options
-    - Only before event starts
-    - Any member can create
+  - Create outcome with options
+  - Only before event starts
+  - Any member can create
 - [ ] Implement `PATCH /api/outcomes/:id`
-    - Only if no bets placed
-    - Creator or host/co-host
+  - Only if no bets placed
+  - Creator or host/co-host
 - [ ] Implement `DELETE /api/outcomes/:id`
-    - Creator or host/co-host
-    - Refund bets if any exist
+  - Creator or host/co-host
+  - Refund bets if any exist
 
 #### Story 3.2: Betting
 
@@ -722,14 +722,14 @@ model OtpCode {
 **Tasks:**
 
 - [ ] Implement `GET /api/outcomes/:id/bets`
-    - Show all bets (amounts visible to all)
+  - Show all bets (amounts visible to all)
 - [ ] Implement `POST /api/outcomes/:id/bets`
-    - Place or update bet
-    - Only before event starts
-    - Validate outcome is OPEN
+  - Place or update bet
+  - Only before event starts
+  - Validate outcome is OPEN
 - [ ] Implement `DELETE /api/bets/:id`
-    - Only own bet
-    - Only before event starts
+  - Only own bet
+  - Only before event starts
 - [ ] Lock all bets when event starts (status → LOCKED)
 
 #### Story 3.3: Pari-Mutuel Calculation
@@ -741,16 +741,16 @@ model OtpCode {
 
 - [ ] Create pari-mutuel calculation service
 
-    ```typescript
-    interface PayoutResult {
-        userId: string;
-        betAmount: number;
-        payout: number;
-        netGain: number;
-    }
+  ```typescript
+  interface PayoutResult {
+    userId: string;
+    betAmount: number;
+    payout: number;
+    netGain: number;
+  }
 
-    function calculatePayouts(outcome: Outcome, winningOptionId: string, rake: number = 0.01): PayoutResult[];
-    ```
+  function calculatePayouts(outcome: Outcome, winningOptionId: string, rake: number = 0.01): PayoutResult[];
+  ```
 
 - [ ] Handle edge case: no bets on winning option (refund all)
 - [ ] Handle edge case: only one bettor (return their bet minus rake)
@@ -764,11 +764,11 @@ model OtpCode {
 **Tasks:**
 
 - [ ] Implement `POST /api/outcomes/:id/resolve`
-    - Host/co-host only
-    - Set winning option
-    - Calculate payouts
-    - Generate settlement records
-    - Update outcome status to RESOLVED
+  - Host/co-host only
+  - Set winning option
+  - Calculate payouts
+  - Generate settlement records
+  - Update outcome status to RESOLVED
 
 ---
 
@@ -793,12 +793,12 @@ model OtpCode {
 **Tasks:**
 
 - [ ] Implement `GET /api/events/:id/settlements`
-    - Show who owes whom for this event
+  - Show who owes whom for this event
 - [ ] Implement `PATCH /api/settlements/:id`
-    - Mark as settled
-    - Either party can mark
+  - Mark as settled
+  - Either party can mark
 - [ ] Implement `GET /api/users/:id/ledger`
-    - Cross-event ledger for user
+  - Cross-event ledger for user
 
 ---
 
@@ -1035,9 +1035,9 @@ model OtpCode {
 - Outcome: "Will Brian be late?"
 - Options: Yes, No
 - Bets:
-    - Alice: $10 on Yes
-    - Bob: $20 on Yes
-    - Charlie: $15 on No
+  - Alice: $10 on Yes
+  - Bob: $20 on Yes
+  - Charlie: $15 on No
 
 **If "Yes" wins:**
 
@@ -1046,9 +1046,9 @@ model OtpCode {
 3. Net pool: $44.55
 4. Total bet on Yes: $30
 5. Payouts:
-    - Alice: ($10 / $30) × $44.55 = $14.85
-    - Bob: ($20 / $30) × $44.55 = $29.70
-    - Charlie: $0
+   - Alice: ($10 / $30) × $44.55 = $14.85
+   - Bob: ($20 / $30) × $44.55 = $29.70
+   - Charlie: $0
 
 **Settlements:**
 

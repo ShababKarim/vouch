@@ -29,11 +29,11 @@ Vouch is an event invitation and RSVP application with integrated pari-mutuel (p
 #### 2.1 Event Creation
 
 - Hosts can create events with:
-    - Event title
-    - Date and time
-    - Location (physical address or virtual link)
-    - Description
-    - Optional cover image
+  - Event title
+  - Date and time
+  - Location (physical address or virtual link)
+  - Description
+  - Optional cover image
 
 > **Clarifying Questions:**
 >
@@ -80,8 +80,8 @@ Vouch is an event invitation and RSVP application with integrated pari-mutuel (p
 
 - **Who can create:** Host or any attendee
 - **Outcome structure:**
-    - Question/prediction statement (e.g., "Brian will show up late to game night")
-    - Multiple options to bet on (e.g., Yes / No, or custom options like "Before 7pm / 7-8pm / After 8pm")
+  - Question/prediction statement (e.g., "Brian will show up late to game night")
+  - Multiple options to bet on (e.g., Yes / No, or custom options like "Before 7pm / 7-8pm / After 8pm")
 
 > **Clarifying Questions:**
 >
@@ -112,9 +112,9 @@ Vouch is an event invitation and RSVP application with integrated pari-mutuel (p
 
 - All bets on an outcome are pooled together
 - Winnings are distributed proportionally based on:
-    - Total pool size
-    - Amount wagered on the winning option
-    - Individual bet amount
+  - Total pool size
+  - Amount wagered on the winning option
+  - Individual bet amount
 
 > **Clarifying Questions:**
 >
@@ -129,8 +129,8 @@ Vouch is an event invitation and RSVP application with integrated pari-mutuel (p
 
 - After the event, the host inputs the correct answer for each outcome
 - Results are displayed to all bettors showing:
-    - Winning option
-    - Payout amounts per user
+  - Winning option
+  - Payout amounts per user
 
 > **Clarifying Questions:**
 >

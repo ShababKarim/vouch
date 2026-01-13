@@ -192,45 +192,45 @@ S3_BUCKET_NAME="vouch-uploads"
 version: '3.8'
 
 services:
-    app:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        ports:
-            - '3000:3000'
-        environment:
-            - DATABASE_URL=postgresql://vouch:vouch@db:5432/vouch
-            - NODE_ENV=local
-            - NEXT_PUBLIC_APP_URL=http://localhost:3000
-            - JWT_SECRET=local-dev-secret-key-min-32-characters
-            - JWT_EXPIRY_HOURS=168
-        depends_on:
-            db:
-                condition: service_healthy
-        volumes:
-            - ./src:/app/src
-            - ./prisma:/app/prisma
-            - ./public:/app/public
-            - ./uploads:/app/uploads
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=postgresql://vouch:vouch@db:5432/vouch
+      - NODE_ENV=local
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      - JWT_SECRET=local-dev-secret-key-min-32-characters
+      - JWT_EXPIRY_HOURS=168
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+      - ./public:/app/public
+      - ./uploads:/app/uploads
 
-    db:
-        image: postgres:16-alpine
-        environment:
-            POSTGRES_USER: vouch
-            POSTGRES_PASSWORD: vouch
-            POSTGRES_DB: vouch
-        ports:
-            - '5432:5432'
-        volumes:
-            - postgres_data:/var/lib/postgresql/data
-        healthcheck:
-            test: ['CMD-SHELL', 'pg_isready -U vouch']
-            interval: 5s
-            timeout: 5s
-            retries: 5
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vouch
+      POSTGRES_PASSWORD: vouch
+      POSTGRES_DB: vouch
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vouch']
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
-    postgres_data:
+  postgres_data:
 ```
 
 ### Docker Compose Override (Local-Prod)
@@ -240,17 +240,17 @@ volumes:
 version: '3.8'
 
 services:
-    app:
-        environment:
-            - NODE_ENV=local-prod
-            - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
-            - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
-            - TWILIO_VERIFY_SERVICE_SID=${TWILIO_VERIFY_SERVICE_SID}
-            - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
-            - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-            - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-            - AWS_REGION=${AWS_REGION}
-            - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+  app:
+    environment:
+      - NODE_ENV=local-prod
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_VERIFY_SERVICE_SID=${TWILIO_VERIFY_SERVICE_SID}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
 ```
 
 ### Dockerfile
@@ -628,20 +628,20 @@ model Settlement {
 - [ ] Install and configure shadcn/ui
 - [ ] Configure Prettier with Tailwind plugin
 - [ ] Create folder structure:
-    ```
-    src/
-      app/           # Next.js app router pages
-      components/    # React components
-        ui/          # shadcn components
-        layout/      # Layout components
-        events/      # Event-related components
-        outcomes/    # Betting components
-        settlements/ # Settlement components
-      lib/           # Utilities
-      services/      # External service integrations
-      types/         # TypeScript types
-    prisma/          # Database schema
-    ```
+  ```
+  src/
+    app/           # Next.js app router pages
+    components/    # React components
+      ui/          # shadcn components
+      layout/      # Layout components
+      events/      # Event-related components
+      outcomes/    # Betting components
+      settlements/ # Settlement components
+    lib/           # Utilities
+    services/      # External service integrations
+    types/         # TypeScript types
+  prisma/          # Database schema
+  ```
 - [ ] Create `.env.example`
 - [ ] Create README.md with setup instructions
 
@@ -682,9 +682,9 @@ model Settlement {
 - [ ] Create `prisma/schema.prisma`
 - [ ] Run `npx prisma migrate dev --name init`
 - [ ] Create `prisma/seed.ts` with test data:
-    - 3 test users
-    - 2 test events (1 public, 1 private)
-    - Sample outcomes and bets
+  - 3 test users
+  - 2 test events (1 public, 1 private)
+  - Sample outcomes and bets
 - [ ] Create `src/lib/prisma.ts` (singleton client)
 - [ ] Add seed script to `package.json`
 
@@ -724,13 +724,13 @@ model Settlement {
 **Tasks:**
 
 - [ ] Create `src/services/sms/twilio.ts`
-    - `sendOtp(phone)` - uses Twilio Verify
-    - `verifyOtp(phone, code)` - verifies with Twilio
-    - `sendSms(phone, message)` - for invites/blasts
+  - `sendOtp(phone)` - uses Twilio Verify
+  - `verifyOtp(phone, code)` - verifies with Twilio
+  - `sendSms(phone, message)` - for invites/blasts
 - [ ] Create `src/lib/auth.ts`
-    - `signJwt(userId)` - create token
-    - `verifyJwt(token)` - validate token
-    - `getSession(request)` - extract user from request
+  - `signJwt(userId)` - create token
+  - `verifyJwt(token)` - validate token
+  - `getSession(request)` - extract user from request
 - [ ] Implement `POST /api/auth/request-otp`
 - [ ] Implement `POST /api/auth/verify-otp`
 - [ ] Implement `POST /api/auth/complete-profile`
@@ -755,20 +755,20 @@ model Settlement {
 **Tasks:**
 
 - [ ] Implement `POST /api/events`
-    - Generate unique invite code
-    - Auto-add creator as HOST
+  - Generate unique invite code
+  - Auto-add creator as HOST
 - [ ] Implement `GET /api/events`
-    - Return events where user is member
-    - Include member count, outcome count
+  - Return events where user is member
+  - Include member count, outcome count
 - [ ] Implement `GET /api/events/:id`
-    - Verify membership
-    - Include members, outcomes summary
+  - Verify membership
+  - Include members, outcomes summary
 - [ ] Implement `PATCH /api/events/:id`
-    - Verify host/cohost role
+  - Verify host/cohost role
 - [ ] Implement `DELETE /api/events/:id`
-    - Verify host role
+  - Verify host role
 - [ ] Implement `GET /api/events/invite/:code`
-    - Public endpoint for invite preview
+  - Public endpoint for invite preview
 
 ---
 
@@ -787,14 +787,14 @@ model Settlement {
 
 - [ ] Implement `GET /api/events/:id/members`
 - [ ] Implement `POST /api/events/:id/members`
-    - Create membership (or find existing user)
-    - Send SMS invite via Twilio
+  - Create membership (or find existing user)
+  - Send SMS invite via Twilio
 - [ ] Implement `PATCH /api/events/:id/members/:userId`
-    - Update role (ATTENDEE → COHOST)
+  - Update role (ATTENDEE → COHOST)
 - [ ] Implement `DELETE /api/events/:id/members/:userId`
 - [ ] Implement `POST /api/events/:id/rsvp`
 - [ ] Implement `POST /api/events/:id/join`
-    - For public events via invite code
+  - For public events via invite code
 
 ---
 
@@ -810,9 +810,9 @@ model Settlement {
 **Tasks:**
 
 - [ ] Implement `POST /api/events/:id/blast`
-    - Accept `{ message, filter: 'all' | 'yes' | 'maybe' }`
-    - Send SMS to filtered members
-    - Verify host/cohost role
+  - Accept `{ message, filter: 'all' | 'yes' | 'maybe' }`
+  - Send SMS to filtered members
+  - Verify host/cohost role
 
 ---
 
@@ -829,11 +829,11 @@ model Settlement {
 **Tasks:**
 
 - [ ] Create `src/lib/event-status.ts`
-    - `checkAndUpdateStatus(event)` - auto-transition logic
+  - `checkAndUpdateStatus(event)` - auto-transition logic
 - [ ] Add status check to `GET /api/events/:id`
 - [ ] Implement `POST /api/events/:id/complete`
-    - Host/cohost only
-    - Transition to COMPLETED
+  - Host/cohost only
+  - Transition to COMPLETED
 
 ---
 
@@ -853,17 +853,17 @@ model Settlement {
 **Tasks:**
 
 - [ ] Implement `GET /api/events/:id/outcomes`
-    - Include options with bet totals
-    - Include user's bet if exists
+  - Include options with bet totals
+  - Include user's bet if exists
 - [ ] Implement `POST /api/events/:id/outcomes`
-    - Verify event is UPCOMING
-    - Create outcome with options
+  - Verify event is UPCOMING
+  - Create outcome with options
 - [ ] Implement `PATCH /api/outcomes/:id`
-    - Verify no bets exist
-    - Verify creator or host/cohost
+  - Verify no bets exist
+  - Verify creator or host/cohost
 - [ ] Implement `DELETE /api/outcomes/:id`
-    - Mark as REFUNDED if bets exist
-    - Verify creator or host/cohost
+  - Mark as REFUNDED if bets exist
+  - Verify creator or host/cohost
 
 ---
 
@@ -880,16 +880,16 @@ model Settlement {
 **Tasks:**
 
 - [ ] Implement `GET /api/outcomes/:id/bets`
-    - Return all bets with user info
+  - Return all bets with user info
 - [ ] Implement `POST /api/outcomes/:id/bets`
-    - Upsert bet (create or update)
-    - Verify event is UPCOMING
-    - Verify outcome is OPEN
+  - Upsert bet (create or update)
+  - Verify event is UPCOMING
+  - Verify outcome is OPEN
 - [ ] Implement `DELETE /api/bets/:id`
-    - Verify own bet
-    - Verify event is UPCOMING
+  - Verify own bet
+  - Verify event is UPCOMING
 - [ ] Add outcome locking to event status transition
-    - When UPCOMING → ACTIVE, set all outcomes to LOCKED
+  - When UPCOMING → ACTIVE, set all outcomes to LOCKED
 
 ---
 
@@ -908,22 +908,22 @@ model Settlement {
 
 - [ ] Create `src/services/betting/pari-mutuel.ts`
 
-    ```typescript
-    interface BetWithUser {
-        userId: string;
-        optionId: string;
-        amount: number;
-    }
+  ```typescript
+  interface BetWithUser {
+    userId: string;
+    optionId: string;
+    amount: number;
+  }
 
-    interface PayoutResult {
-        userId: string;
-        betAmount: number;
-        payout: number;
-        netGain: number; // payout - betAmount
-    }
+  interface PayoutResult {
+    userId: string;
+    betAmount: number;
+    payout: number;
+    netGain: number; // payout - betAmount
+  }
 
-    function calculatePayouts(bets: BetWithUser[], winningOptionId: string, rakePercent: number = 0.01): PayoutResult[];
-    ```
+  function calculatePayouts(bets: BetWithUser[], winningOptionId: string, rakePercent: number = 0.01): PayoutResult[];
+  ```
 
 - [ ] Implement calculation logic
 - [ ] Handle edge case: no bets on winning option
@@ -946,12 +946,12 @@ model Settlement {
 **Tasks:**
 
 - [ ] Implement `POST /api/outcomes/:id/resolve`
-    - Verify host/cohost role
-    - Verify outcome is LOCKED
-    - Set winning option
-    - Calculate payouts
-    - Generate settlement records
-    - Update status to RESOLVED
+  - Verify host/cohost role
+  - Verify outcome is LOCKED
+  - Set winning option
+  - Calculate payouts
+  - Generate settlement records
+  - Update status to RESOLVED
 - [ ] Check if all outcomes resolved → update event to RESOLVED
 
 ---
@@ -971,8 +971,8 @@ model Settlement {
 **Tasks:**
 
 - [ ] Create `src/services/betting/settlement.ts`
-    - `generateSettlements(eventId, payoutResults)`
-    - Consolidate: if A owes B $10 and B owes A $3, net is A owes B $7
+  - `generateSettlements(eventId, payoutResults)`
+  - Consolidate: if A owes B $10 and B owes A $3, net is A owes B $7
 - [ ] Integrate with outcome resolution
 
 ---
@@ -990,13 +990,13 @@ model Settlement {
 **Tasks:**
 
 - [ ] Implement `GET /api/events/:id/settlements`
-    - Return settlements with user info
+  - Return settlements with user info
 - [ ] Implement `PATCH /api/settlements/:id`
-    - Verify user is from or to
-    - Set isSettled = true, settledAt = now
+  - Verify user is from or to
+  - Set isSettled = true, settledAt = now
 - [ ] Implement `GET /api/users/:id/ledger`
-    - Aggregate unsettled amounts across events
-    - Return net amounts per counterparty
+  - Aggregate unsettled amounts across events
+  - Return net amounts per counterparty
 
 ---
 
@@ -1264,16 +1264,16 @@ docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/vouch:latest
 
 ```json
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "PublicReadGetObject",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::vouch-uploads-*/*"
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::vouch-uploads-*/*"
+    }
+  ]
 }
 ```
 
@@ -1281,12 +1281,12 @@ docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/vouch:latest
 
 ```json
 [
-    {
-        "AllowedHeaders": ["*"],
-        "AllowedMethods": ["GET", "PUT", "POST"],
-        "AllowedOrigins": ["*"],
-        "ExposeHeaders": []
-    }
+  {
+    "AllowedHeaders": ["*"],
+    "AllowedMethods": ["GET", "PUT", "POST"],
+    "AllowedOrigins": ["*"],
+    "ExposeHeaders": []
+  }
 ]
 ```
 
@@ -1295,15 +1295,15 @@ docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/vouch:latest
 1. Go to **Secrets Manager** → **Store a new secret**
 2. Secret type: Other
 3. Key/value pairs:
-    - `DATABASE_URL`: `postgresql://vouch:<password>@<rds-endpoint>:5432/vouch`
-    - `JWT_SECRET`: `<generate-32-char-secret>`
-    - `TWILIO_ACCOUNT_SID`: `<your-sid>`
-    - `TWILIO_AUTH_TOKEN`: `<your-token>`
-    - `TWILIO_VERIFY_SERVICE_SID`: `<your-verify-sid>`
-    - `TWILIO_PHONE_NUMBER`: `<your-number>`
-    - `AWS_ACCESS_KEY_ID`: `<key>`
-    - `AWS_SECRET_ACCESS_KEY`: `<secret>`
-    - `S3_BUCKET_NAME`: `vouch-uploads-<suffix>`
+   - `DATABASE_URL`: `postgresql://vouch:<password>@<rds-endpoint>:5432/vouch`
+   - `JWT_SECRET`: `<generate-32-char-secret>`
+   - `TWILIO_ACCOUNT_SID`: `<your-sid>`
+   - `TWILIO_AUTH_TOKEN`: `<your-token>`
+   - `TWILIO_VERIFY_SERVICE_SID`: `<your-verify-sid>`
+   - `TWILIO_PHONE_NUMBER`: `<your-number>`
+   - `AWS_ACCESS_KEY_ID`: `<key>`
+   - `AWS_SECRET_ACCESS_KEY`: `<secret>`
+   - `S3_BUCKET_NAME`: `vouch-uploads-<suffix>`
 4. Secret name: `vouch/production`
 
 ### Step 6: Create ECS Cluster
@@ -1322,10 +1322,10 @@ docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/vouch:latest
 5. Memory: 0.5 GB
 6. Task role: Create new (needs Secrets Manager access)
 7. Container:
-    - Name: `vouch`
-    - Image: `<account-id>.dkr.ecr.us-east-1.amazonaws.com/vouch:latest`
-    - Port: 3000
-    - Environment variables from Secrets Manager
+   - Name: `vouch`
+   - Image: `<account-id>.dkr.ecr.us-east-1.amazonaws.com/vouch:latest`
+   - Port: 3000
+   - Environment variables from Secrets Manager
 8. Create
 
 ### Step 8: Create Application Load Balancer
@@ -1336,10 +1336,10 @@ docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/vouch:latest
 4. Scheme: Internet-facing
 5. Listeners: HTTP (80), HTTPS (443)
 6. Create target group:
-    - Type: IP
-    - Name: `vouch-tg`
-    - Port: 3000
-    - Health check: `/api/health`
+   - Type: IP
+   - Name: `vouch-tg`
+   - Port: 3000
+   - Health check: `/api/health`
 7. Create ALB
 
 ### Step 9: Create ECS Service
@@ -1350,12 +1350,12 @@ docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/vouch:latest
 4. Service name: `vouch-service`
 5. Desired tasks: 1
 6. Networking:
-    - VPC: Default
-    - Subnets: Select all
-    - Security group: Create new (allow 3000 from ALB)
+   - VPC: Default
+   - Subnets: Select all
+   - Security group: Create new (allow 3000 from ALB)
 7. Load balancing:
-    - Select ALB: `vouch-alb`
-    - Target group: `vouch-tg`
+   - Select ALB: `vouch-alb`
+   - Target group: `vouch-tg`
 8. Create
 
 ### Step 10: Configure Domain & SSL
@@ -1364,9 +1364,9 @@ docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/vouch:latest
 2. Domain: `vouch.yourdomain.com`
 3. Validate via DNS
 4. Go to **Route 53** → Create A record
-    - Name: `vouch`
-    - Alias: Yes
-    - Target: ALB
+   - Name: `vouch`
+   - Alias: Yes
+   - Target: ALB
 5. Go to **EC2** → **Load Balancers** → **vouch-alb**
 6. Add HTTPS listener with ACM certificate
 7. Redirect HTTP to HTTPS
@@ -1389,9 +1389,9 @@ npx prisma migrate deploy
 - Outcome: "Will Brian be late?"
 - Options: Yes, No
 - Bets:
-    - Alice: $10 on Yes
-    - Bob: $20 on Yes
-    - Charlie: $15 on No
+  - Alice: $10 on Yes
+  - Bob: $20 on Yes
+  - Charlie: $15 on No
 
 **If "Yes" wins:**
 
@@ -1400,9 +1400,9 @@ npx prisma migrate deploy
 3. Net pool: $44.55
 4. Total bet on Yes: $30.00
 5. Payouts:
-    - Alice: ($10 / $30) × $44.55 = **$14.85**
-    - Bob: ($20 / $30) × $44.55 = **$29.70**
-    - Charlie: **$0.00**
+   - Alice: ($10 / $30) × $44.55 = **$14.85**
+   - Bob: ($20 / $30) × $44.55 = **$29.70**
+   - Charlie: **$0.00**
 
 **Net gains:**
 
