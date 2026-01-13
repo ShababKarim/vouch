@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import AttendeesTab from '@/components/events/AttendeesTab';
 import SettlementsTab from '@/components/events/SettlementsTab';
-import { toTitleCase } from '@/lib/utils';
+import OutcomeList from '@/components/outcomes/OutcomeList';
 import DetailsTab from '@/components/events/DetailsTab';
 
 export default function EventDetailPage() {
@@ -32,6 +32,7 @@ export default function EventDetailPage() {
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<TabType>('details');
   const [isUpdatingRsvp, setIsUpdatingRsvp] = useState(false);
+  const [isCompletingEvent, setIsCompletingEvent] = useState(false);
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
@@ -123,6 +124,33 @@ export default function EventDetailPage() {
     }
   };
 
+  const handleCompleteEvent = async () => {
+    if (!event) return;
+
+    setIsCompletingEvent(true);
+    try {
+      const response = await fetch(`/api/events/${eventId}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to complete event');
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        await fetchEvent();
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to complete event');
+    } finally {
+      setIsCompletingEvent(false);
+    }
+  };
+
   const getUserMembership = () => {
     if (!event || !user) return null;
     return event.memberships.find((m) => m.user.id === user.id);
@@ -131,6 +159,11 @@ export default function EventDetailPage() {
   const isHost = () => {
     const membership = getUserMembership();
     return membership?.role === 'HOST';
+  };
+
+  const isHostOrCoHost = () => {
+    const membership = getUserMembership();
+    return membership?.role === 'HOST' || membership?.role === 'COHOST';
   };
 
   const handleShare = async () => {
@@ -312,7 +345,7 @@ export default function EventDetailPage() {
                       </div>
                     )}
 
-                    {isHost() && (
+                    {isHostOrCoHost() && (
                       <div className="flex items-center space-x-1">
                         <button
                           className="p-2 text-gray-500 transition-colors hover:text-gray-700"
@@ -320,9 +353,20 @@ export default function EventDetailPage() {
                         >
                           <Settings className="h-4 w-4" />
                         </button>
+                        {event.status === 'ACTIVE' && (
+                          <button
+                            onClick={handleCompleteEvent}
+                            disabled={isCompletingEvent}
+                            className="inline-flex items-center rounded-md border border-green-600 bg-green-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Mark event as completed"
+                          >
+                            <CheckCircle className="mr-1 h-3 w-3" />
+                            {isCompletingEvent ? 'Completing...' : 'Complete'}
+                          </button>
+                        )}
                         <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-800">
                           <UserCheck className="mr-1 h-3 w-3" />
-                          Host
+                          {isHost() ? 'Host' : 'Co-host'}
                         </span>
                       </div>
                     )}
@@ -395,10 +439,11 @@ export default function EventDetailPage() {
               )}
 
               {activeTab === 'bets' && (
-                <div>
-                  <h2 className="mb-4 text-lg font-medium text-gray-900">Betting Markets</h2>
-                  <p className="text-gray-500">Betting functionality coming soon...</p>
-                </div>
+                <OutcomeList
+                  eventId={eventId}
+                  eventStatus={event.status}
+                  userMembership={getUserMembership() || undefined}
+                />
               )}
 
               {activeTab === 'settlements' && (

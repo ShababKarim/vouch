@@ -51,4 +51,47 @@ export interface Settlement {
   };
 }
 
+export interface Option {
+  id: string;
+  label: string;
+  createdAt: string;
+  totalAmount: number;
+  userBet: {
+    id: string;
+    amount: number;
+    createdAt: string;
+  } | null;
+  betCount: number;
+}
+
+export interface Outcome {
+  id: string;
+  question: string;
+  status: 'OPEN' | 'LOCKED' | 'RESOLVED' | 'REFUNDED';
+  winningOptionId?: string;
+  createdAt: string;
+  updatedAt: string;
+  creator: {
+    id: string;
+    displayName: string;
+    photoUrl?: string;
+  };
+  options: Option[];
+}
+
+export interface Bet {
+  id: string;
+  amount: number;
+  createdAt: string;
+  user: {
+    id: string;
+    displayName: string;
+    photoUrl?: string;
+  };
+  option: {
+    id: string;
+    label: string;
+  };
+}
+
 export type TabType = 'details' | 'attendees' | 'bets' | 'settlements';
