@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import AttendeesTab from '@/components/events/AttendeesTab';
 import SettlementsTab from '@/components/events/SettlementsTab';
+import { toTitleCase } from '@/lib/utils';
+import DetailsTab from '@/components/events/DetailsTab';
 
 export default function EventDetailPage() {
   const [event, setEvent] = useState<Event | null>(null);
@@ -181,10 +183,6 @@ export default function EventDetailPage() {
       default:
         return 'bg-gray-100 text-gray-800';
     }
-  };
-
-  const toTitleCase = (str: string) => {
-    return str.toLowerCase().replace(/\b\w/g, (match) => match.toUpperCase());
   };
 
   const tabs = [
@@ -368,7 +366,7 @@ export default function EventDetailPage() {
             </div>
 
             <div className="border-b border-gray-200">
-              <nav className="-mb-px flex space-x-8">
+              <nav className="-mb-px flex space-x-8 overflow-x-scroll">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   return (
@@ -390,38 +388,11 @@ export default function EventDetailPage() {
             </div>
 
             <div className="mt-6">
-              {activeTab === 'details' && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="mb-2 text-lg font-medium text-gray-900">About this event</h2>
-                    {event.description ? (
-                      <p className="whitespace-pre-wrap text-gray-600">{event.description}</p>
-                    ) : (
-                      <p className="text-gray-500 italic">No description provided</p>
-                    )}
-                  </div>
+              {activeTab === 'details' && <DetailsTab event={event} />}
 
-                  <div>
-                    <h2 className="mb-2 text-lg font-medium text-gray-900">Event details</h2>
-                    <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Status</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{toTitleCase(event.status)}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Privacy</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{event.isPublic ? 'Public' : 'Private'}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Invite code</dt>
-                        <dd className="mt-1 font-mono text-sm text-gray-900">{event.inviteCode}</dd>
-                      </div>
-                    </dl>
-                  </div>
-                </div>
+              {activeTab === 'attendees' && (
+                <AttendeesTab event={event} userMembership={getUserMembership() || undefined} />
               )}
-
-              {activeTab === 'attendees' && <AttendeesTab event={event} />}
 
               {activeTab === 'bets' && (
                 <div>

@@ -1,48 +1,139 @@
-import { Users } from 'lucide-react';
-import { Event } from '@/lib/types';
+'use client';
 
-export default function AttendeesTab({ event }: { event: Event }) {
+import { useState } from 'react';
+import { Event } from '@/lib/types';
+import AttendeeList from './AttendeeList';
+import AddAttendeeModal from './AddAttendeeModal';
+import TextBlastModal from './TextBlastModal';
+
+export default function AttendeesTab({ event, userMembership }: { event: Event; userMembership?: { id: string; role: string; rsvpStatus: string } }) {
+  const [isAddAttendeeModalOpen, setIsAddAttendeeModalOpen] = useState(false);
+  const [isTextBlastModalOpen, setIsTextBlastModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleAddAttendee = async (phone: string) => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/events/${event.id}/members`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to add attendee');
+      }
+
+      // Refresh event data
+      window.location.reload();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to add attendee');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePromoteMember = async (userId: string, newRole: 'COHOST') => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/events/${event.id}/members/${userId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: newRole }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to promote member');
+      }
+
+      // Refresh event data
+      window.location.reload();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to promote member');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRemoveMember = async (userId: string) => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/events/${event.id}/members/${userId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to remove member');
+      }
+
+      // Refresh event data
+      window.location.reload();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to remove member');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSendBlast = async (message: string, filter: 'all' | 'yes' | 'maybe') => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/events/${event.id}/blast`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, filter }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to send text blast');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send text blast');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div>
-      <h2 className="mb-4 text-lg font-medium text-gray-900">Attendees ({event._count.memberships})</h2>
-      {event.memberships.length === 0 ? (
-        <p className="text-gray-500">No attendees yet</p>
-      ) : (
-        <div className="space-y-3">
-          {event.memberships.map((membership) => (
-            <div key={membership.id} className="flex items-center justify-between">
-              <div className="flex items-center">
-                {membership.user.photoUrl ? (
-                  <img
-                    src={membership.user.photoUrl}
-                    alt={membership.user.displayName}
-                    className="mr-3 h-8 w-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200">
-                    <Users className="h-4 w-4 text-gray-400" />
-                  </div>
-                )}
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{membership.user.displayName}</p>
-                  <p className="text-xs text-gray-500">{membership.role}</p>
-                </div>
-              </div>
-              <span
-                className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                  membership.rsvpStatus === 'YES'
-                    ? 'bg-green-100 text-green-800'
-                    : membership.rsvpStatus === 'NO'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                }`}
-              >
-                {membership.rsvpStatus}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+    <>
+      <AttendeeList
+        event={event}
+        currentUserMembership={userMembership}
+        onPromoteMember={handlePromoteMember}
+        onRemoveMember={handleRemoveMember}
+        onOpenAddAttendee={() => setIsAddAttendeeModalOpen(true)}
+        onOpenTextBlast={() => setIsTextBlastModalOpen(true)}
+      />
+
+      <AddAttendeeModal
+        isOpen={isAddAttendeeModalOpen}
+        onClose={() => setIsAddAttendeeModalOpen(false)}
+        onAddAttendee={handleAddAttendee}
+      />
+
+      <TextBlastModal
+        isOpen={isTextBlastModalOpen}
+        onClose={() => setIsTextBlastModalOpen(false)}
+        onSendBlast={handleSendBlast}
+        event={event}
+      />
+    </>
   );
 }
