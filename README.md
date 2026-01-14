@@ -21,13 +21,13 @@ docker-compose up
 3. Run database migrations:
 
 ```bash
-npx prisma migrate dev
+npx prisma@6 migrate dev
 ```
 
 4. Seed database (optional):
 
 ```bash
-npx prisma db seed
+npx prisma@6 db seed
 ```
 
 ### Local-Prod (Real Services)

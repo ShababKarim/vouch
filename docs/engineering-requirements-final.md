@@ -273,7 +273,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN npx prisma generate
+RUN npx prisma@6 generate
 
 EXPOSE 3000
 ENV PORT 3000
@@ -286,7 +286,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN npx prisma generate
+RUN npx prisma@6 generate
 RUN npm run build
 
 # Production image
@@ -680,7 +680,7 @@ model Settlement {
 **Tasks:**
 
 - [ ] Create `prisma/schema.prisma`
-- [ ] Run `npx prisma migrate dev --name init`
+- [ ] Run `npx prisma@6 migrate dev --name init`
 - [ ] Create `prisma/seed.ts` with test data:
   - 3 test users
   - 2 test events (1 public, 1 private)
@@ -1375,7 +1375,7 @@ docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/vouch:latest
 
 ```bash
 # Connect to RDS via bastion or ECS exec
-npx prisma migrate deploy
+npx prisma@6 migrate deploy
 ```
 
 ---

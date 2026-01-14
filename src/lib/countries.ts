@@ -87,7 +87,7 @@ export function formatPhoneNumberForE164(phoneNumber: string, dialCode: string):
 }
 
 export function getUserCountry(): Country {
-  const userLocale = navigator.language || 'en-US';
+  const userLocale = typeof window !== 'undefined' && typeof navigator !== 'undefined' ? navigator.language : 'en-US';
   const countryCode = userLocale.split('-')[1]?.toUpperCase() || 'US';
 
   return countries.find((country) => country.code === countryCode) || countries[0];

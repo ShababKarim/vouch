@@ -14,7 +14,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN npx prisma generate
+RUN npx prisma@6 generate
 
 EXPOSE 3000
 ENV PORT 3000
@@ -24,10 +24,23 @@ CMD ["npm", "run", "dev"]
 # Production build
 FROM base AS builder
 WORKDIR /app
+
+ARG APP_ENV
+ARG NODE_ENV
+ARG NEXT_PUBLIC_APP_URL
+ARG JWT_SECRET
+ARG DATABASE_URL
+
+ENV APP_ENV=${APP_ENV}
+ENV NODE_ENV=${NODE_ENV}
+ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+ENV JWT_SECRET=${JWT_SECRET}
+ENV DATABASE_URL=${DATABASE_URL}
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN npx prisma generate
+RUN npx prisma@6 generate
 RUN npm run build
 
 # Production image
