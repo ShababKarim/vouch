@@ -1,0 +1,24 @@
+spec:
+  name: vouch
+  services:
+    - name: vouch
+      dockerfile_path: Dockerfile
+      instance_count: 1
+      instance_size_slug: apps-s-1vcpu-0.5gb
+      git:
+        branch: release
+        repo_clone_url: https://github.com/ShababKarim/vouch.git
+        deploy_on_push: true
+      envs:
+        - key: APP_ENV
+          scope: BUILD_TIME
+          value: local
+        - key: NODE_ENV
+          scope: BUILD_TIME
+          value: production
+        - key: NEXT_PUBLIC_APP_URL
+          scope: BUILD_TIME
+          value: "https://vibe-vouch.xyz"
+        - key: DATABASE_URL
+          scope: BUILD_TIME
+          value: "${shabab-personal-projects.DATABASE_URL}"
