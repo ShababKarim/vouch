@@ -21,4 +21,7 @@ spec:
           value: "https://vibe-vouch.xyz"
         - key: DATABASE_URL
           scope: BUILD_TIME
-          value: "${shabab-personal-projects.DATABASE_URL}"
+          value: local-secret-key-min-32-characters
+        - key: DATABASE_URL
+          scope: BUILD_TIME
+          value: "postgresql://vouch:vouch@db:5432/vouch" # Placeholder
