@@ -19,7 +19,7 @@ spec:
         - key: NEXT_PUBLIC_APP_URL
           scope: BUILD_TIME
           value: "https://vibe-vouch.xyz"
-        - key: DATABASE_URL
+        - key: JWT_SECRET
           scope: BUILD_TIME
           value: local-secret-key-min-32-characters
         - key: DATABASE_URL
