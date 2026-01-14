@@ -132,7 +132,7 @@ Connect to your RDS instance and run migrations:
 aws secretsmanager get-secret-value --secret-id vouch/production
 
 # Run migrations (from your local machine with DATABASE_URL set)
-npx prisma migrate deploy
+npx prisma@6 migrate deploy
 ```
 
 ## Security Features
