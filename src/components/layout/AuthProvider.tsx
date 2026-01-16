@@ -7,10 +7,10 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (phone: string) => Promise<void>;
-  verifyOtp: (phone: string, code: string) => Promise<void>;
+  verifyOtp: (phone: string, code: string) => Promise<User | null>;
   completeProfile: (displayName: string, photoUrl?: string) => Promise<void>;
   logout: () => Promise<void>;
-  isUserVerified: (user: User | null) => boolean;
+  isUserProfileCompleted: (user: User | null) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,18 +23,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
-  async function checkAuth() {
+  async function checkAuth(): Promise<User | null> {
+    let user: User | null = null;
+
     try {
       const response = await fetch('/api/auth/me');
       if (response.ok) {
         const userData = await response.json();
         setUser(userData?.user);
+        user = userData?.user;
       }
     } catch (error) {
       console.error('Auth check failed:', error);
     } finally {
       setIsLoading(false);
     }
+
+    return user;
   }
 
   async function login(phone: string) {
@@ -50,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  async function verifyOtp(phone: string, code: string) {
+  async function verifyOtp(phone: string, code: string): Promise<User | null> {
     const response = await fetch('/api/auth/verify-otp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -62,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(error.error || 'Verification failed');
     }
 
-    await checkAuth();
+    return checkAuth();
   }
 
   async function completeProfile(displayName: string, photoUrl?: string) {
@@ -86,8 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }
 
-  function isUserVerified(user: User | null): boolean {
-    return user !== null && user.displayName !== user.phone;
+  function isUserProfileCompleted(_user: User | null): boolean {
+    return _user !== null && _user.displayName !== _user.phone;
   }
 
   return (
@@ -99,7 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         verifyOtp,
         completeProfile,
         logout,
-        isUserVerified,
+        isUserProfileCompleted,
       }}
     >
       {children}
