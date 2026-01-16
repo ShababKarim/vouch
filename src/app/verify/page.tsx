@@ -10,7 +10,7 @@ function VerifyContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [timeLeft, setTimeLeft] = useState(60);
-  const { verifyOtp, login, user, isUserVerified } = useAuth();
+  const { verifyOtp, login, user, isUserProfileCompleted } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const phone = searchParams.get('phone');
@@ -51,8 +51,8 @@ function VerifyContent() {
     setError('');
 
     try {
-      await verifyOtp(phone!, code.trim());
-      if (isUserVerified(user)) {
+      const user = await verifyOtp(phone!, code.trim());
+      if (isUserProfileCompleted(user)) {
         router.push('/events');
       } else {
         router.push('/setup');
